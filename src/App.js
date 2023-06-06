@@ -9,16 +9,12 @@ import {
 import {
   doc,
   setDoc,
-  // // getDoc,
-  // // getCountFromServer,
-  // collection,
-  // where,
-  // getDocs,
-  // query,
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
-import Login from './components/Login';
 import Home from './components/Home';
+import Hero from './components/Hero';
+import Send from './components/Send';
+import Receive from './components/Receive';
 
 
 
@@ -64,6 +60,18 @@ function App() {
       .catch((error) => alert(error.message));
   };
 
+  const onSignout = () => {
+    signOut(auth)
+    .then(() => {
+      navigate('/');
+      setUser(null);
+      localStorage.removeItem("user");
+    })
+    .catch(() => {
+      alert("Error occured while logging out!");
+    })
+  }
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -74,11 +82,13 @@ function App() {
     });
   }, []);
 
+
   return ( 
     <Routes>
-      <Route path="/" element={<Login  user={user} setUser={setUser} signIn={onSignin}/>}>
-        <Route index element={<Home  signOut={signOut}/>} />
-      </Route>
+      <Route path="/" element={<Hero  user={user} setUser={setUser} signIn={onSignin}/>}/>
+      <Route path="/home" element={<Home  signOut={onSignout}/>} />
+      <Route path="/send" element={<Send />} />
+      <Route path="/receive" element={<Receive  />} />
     </Routes>
   );
 }
